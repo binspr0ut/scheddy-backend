@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "devstart": "nodemon src/index.js",
-    "start": "node src/index.js",
+    "devstart": "nodemon server.js",
     "prisma": "prisma"
   },
   "repository": {
