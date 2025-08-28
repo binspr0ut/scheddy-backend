@@ -1,0 +1,30 @@
+{
+  "name": "scheddy-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "devstart": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "prisma": "prisma"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/binspr0ut/scheddy-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/binspr0ut/scheddy-backend/issues"
+  },
+  "homepage": "https://github.com/binspr0ut/scheddy-backend#readme",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "express": "^5.1.0",
+    "prisma": "^6.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
