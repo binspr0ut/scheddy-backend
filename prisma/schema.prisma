@@ -7,7 +7,72 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       String  @id
+  name     String
+  password String
+  role     Int
+  caddies  Caddy[]
+}
+
 model Caddy {
-  id   Int    @id @default(autoincrement())
-  name String
+  id         String    @id
+  name       String
+  caddy_type Int
+  id_group   String?
+  id_user    String
+  bookings   Booking[]
+  group      Group?    @relation(fields: [id_group], references: [id])
+  user       User      @relation(fields: [id_user], references: [id])
+  onFields   OnField[]
+}
+
+model Group {
+  id         String     @id
+  group_name String
+  caddies    Caddy[]
+  liburs     Libur[]
+  schedules  Schedule[]
+}
+
+model Schedule {
+  id       String   @id
+  id_group String
+  urutan   Int
+  date     DateTime
+  shift    Int
+  group    Group    @relation(fields: [id_group], references: [id])
+}
+
+model Libur {
+  id         String   @id
+  id_group   String
+  date       DateTime
+  is_request Boolean
+  group      Group    @relation(fields: [id_group], references: [id])
+}
+
+model Booking {
+  id          String   @id
+  id_caddy    String
+  nama_pemain String
+  date        DateTime
+  caddy       Caddy    @relation(fields: [id_caddy], references: [id])
+}
+
+model OnField {
+  id                String   @id
+  id_caddy          String
+  kode              String
+  nama_pemain       String
+  date_turun        DateTime
+  booked            Boolean
+  jumlah_hole       Int?
+  status            Int
+  wood_quantity     Int
+  iron_quantity     Int
+  putter_quantity   Int
+  umbrella_quantity Int
+  other_items       String?
+  caddy             Caddy    @relation(fields: [id_caddy], references: [id])
 }
