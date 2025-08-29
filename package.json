@@ -4,7 +4,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "devstart": "nodemon index.js",
+    "devstart": "nodemon src/index.js",
     "prisma": "prisma"
   },
   "repository": {
