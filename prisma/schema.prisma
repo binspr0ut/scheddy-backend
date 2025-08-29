@@ -19,8 +19,8 @@ model Caddy {
   id         String    @id
   name       String
   caddy_type Int
-  id_group   String?
   id_user    String
+  id_group   Int?
   bookings   Booking[]
   group      Group?    @relation(fields: [id_group], references: [id])
   user       User      @relation(fields: [id_user], references: [id])
@@ -28,8 +28,8 @@ model Caddy {
 }
 
 model Group {
-  id         String     @id
-  group_name String
+  group_name String     @unique
+  id         Int        @id @default(autoincrement())
   caddies    Caddy[]
   liburs     Libur[]
   schedules  Schedule[]
@@ -37,18 +37,18 @@ model Group {
 
 model Schedule {
   id       String   @id
-  id_group String
   urutan   Int
   date     DateTime
   shift    Int
+  id_group Int
   group    Group    @relation(fields: [id_group], references: [id])
 }
 
 model Libur {
   id         String   @id
-  id_group   String
   date       DateTime
   is_request Boolean
+  id_group   Int
   group      Group    @relation(fields: [id_group], references: [id])
 }
 
