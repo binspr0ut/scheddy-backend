@@ -1,9 +1,10 @@
 {
   "name": "scheddy-backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "devstart": "nodemon server.js",
+    "devstart": "nodemon index.js",
     "prisma": "prisma"
   },
   "repository": {
