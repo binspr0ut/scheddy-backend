@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 
 async function seed() {
   const records = [];
-  const csvFilePath = "";
+  const csvFilePath = ""
 
   createReadStream(csvFilePath)
     .pipe(parse({ columns: true, skip_empty_lines: true }))
@@ -30,12 +30,12 @@ async function seed() {
             });
 
             // 2️⃣ Find or create the Group
-            let group = await prisma.group.findUnique({
+            let group = await prisma.caddyGroup.findUnique({
               where: { group_name: key }
             });
 
             if (!group) {
-              group = await prisma.group.create({
+              group = await prisma.caddyGroup.create({
                 data: { group_name: key }
               });
             }
@@ -46,7 +46,7 @@ async function seed() {
                 name: caddyName,
                 caddy_type: 0, // or whatever default
                 id_user: user.id,
-                id_group: group.id
+                id_caddy_group: group.id
               }
             });
 

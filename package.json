@@ -26,8 +26,9 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.15.0",
-    "csv-parse": "^6.1.0",
     "crypto": "^1.0.1",
+    "csv-parse": "^6.1.0",
+    "date-fns": "^4.1.0",
     "express": "^5.1.0",
     "fs": "^0.0.1-security",
     "prisma": "^6.15.0"

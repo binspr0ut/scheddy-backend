@@ -11,7 +11,7 @@ async function seedOnField() {
     }
 
     // 2️⃣ Generate 20 dummy OnField entries
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 25; i++) {
       const randomCaddy = caddies[Math.floor(Math.random() * caddies.length)];
 
       await prisma.onField.create({
