@@ -5,8 +5,8 @@ const today = new Date();
 const startOfDay = new Date(today.setHours(0, 0, 0, 0));
 const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
-// get caddy dengan status onfield pada hari ini
-const getCaddyOnField = async (req, res) => {
+// get caddy dengan status done pada hari ini
+const getCaddyDone = async (req, res) => {
   try {
     const groups = await prisma.caddyGroup.findMany({
       select: {
@@ -45,18 +45,18 @@ const getCaddyOnField = async (req, res) => {
     if (!result.length || result.every((g) => g.group.caddies.length === 0)) {
       return res.status(404).json({
         success: false,
-        message: "No caddy onfield found",
+        message: "No caddy done found",
         data: [],
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Caddy onfield retrieved successfully",
+      message: "Caddy done retrieved successfully",
       data: result,
     });
   } catch (error) {
-    console.error("Error fetching caddy onfield:", error);
+    console.error("Error fetching caddy done:", error);
 
     // Fallback error umum
     return res.status(500).json({
@@ -67,4 +67,4 @@ const getCaddyOnField = async (req, res) => {
   }
 };
 
-export default getCaddyOnField;
+export default getCaddyDone;

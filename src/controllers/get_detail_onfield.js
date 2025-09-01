@@ -5,9 +5,10 @@ const today = new Date();
 const startOfDay = new Date(today.setHours(0, 0, 0, 0));
 const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 
+// get detail informasi onfield hari ini berdasarkan id caddy
 const getDetailOnField = async (req, res) => {
   try {
-    const { id_caddy } = req.params
+    const { id_caddy } = req.params     
 
     if (!id_caddy) {
       return res.status(400).json({
@@ -16,13 +17,13 @@ const getDetailOnField = async (req, res) => {
       });
     }
 
-    // ambil 1 data onfield untuk caddy tertentu dengan status = 0
+    // ambil 1 data onfield untuk caddy tertentu pada hari ini
     const onField = await prisma.onField.findFirst({
       where: {
         id_caddy,
-        date_turun: {       // filter hanya yang tanggalnya hari ini
-            gte: startOfDay,  // gte = greater than or equal
-            lte: endOfDay,    // lt = less than
+        date_turun: {           // filter hanya yang tanggalnya hari ini
+            gte: startOfDay,    // gte = greater than or equal
+            lte: endOfDay,      // lt = less than
         },
       },
       select: {
@@ -50,7 +51,7 @@ const getDetailOnField = async (req, res) => {
     if (!onField) {
       return res.status(404).json({
         success: false,
-        message: "No active onfield record found for this caddy",
+        message: "No record found for this caddy",
       });
     }
 
