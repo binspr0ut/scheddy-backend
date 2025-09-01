@@ -1,29 +1,26 @@
-# Stage 1: Build dependencies
+# Stage 1: Build
 FROM node:20-alpine AS builder
-
-# Set working directory
 WORKDIR /usr/src/app
 
-# Install dependencies first (layer caching)
+# Install dependencies
 COPY package*.json ./
-RUN npm install --only=production
+RUN npm install --omit=dev
 
-# Copy application source
+# Copy source
 COPY . .
+
+# Generate Prisma Client (jika pakai Prisma)
+RUN npx prisma generate
 
 # Stage 2: Production image
 FROM node:20-alpine
-
 WORKDIR /usr/src/app
 
-# Copy installed dependencies & app source from builder
+# Copy hasil build
 COPY --from=builder /usr/src/app /usr/src/app
 
-# Prisma requires generating client
-RUN npx prisma generate
-
-# Expose the port your Express app runs on
+# Expose port yang akan dipakai Cloud Run
 EXPOSE 8080
 
-# Start the server
+# Start server
 CMD ["node", "index.js"]

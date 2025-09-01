@@ -1,5 +1,9 @@
 import express from "express";
 import RekapRoute from "../src/routes/routes.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const app = express();
 
 app.get("/", (req, res) => {

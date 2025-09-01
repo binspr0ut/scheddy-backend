@@ -1,0 +1,37 @@
+# cloudbuild.yaml
+steps:
+# Step 0: Buat .env dari substitusi Cloud Build
+- name: 'ubuntu'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "API_KEY=${_API_KEY}" >> .env
+      echo "DATABASE_URL=${_DATABASE_URL}" >> .env
+
+# Step 1: Build Docker image
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/scheddy-backend:$SHORT_SHA', '.']
+
+# Step 2: Push Docker image ke Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/scheddy-backend:$SHORT_SHA']
+
+# Step 3: Deploy ke Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      gcloud run deploy scheddy-backend \
+        --image gcr.io/$PROJECT_ID/scheddy-backend:$SHORT_SHA \
+        --region asia-southeast2 \
+        --platform managed \
+        --allow-unauthenticated \
+        --set-env-vars API_KEY=${_API_KEY},DATABASE_URL=${_DATABASE_URL}
+        
+substitutions:
+  _API_KEY: "your_api_key_here"
+  _DATABASE_URL: "your_database_url_here"
+
+timeout: "900s"
