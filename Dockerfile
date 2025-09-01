@@ -23,7 +23,7 @@ COPY --from=builder /usr/src/app /usr/src/app
 RUN npx prisma generate
 
 # Expose the port your Express app runs on
-EXPOSE 3000
+EXPOSE 8080
 
 # Start the server
 CMD ["node", "index.js"]
