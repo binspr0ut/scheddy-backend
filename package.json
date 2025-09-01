@@ -6,7 +6,11 @@
   "scripts": {
     "devstart": "nodemon src/index.js",
     "prisma": "prisma",
-    "seed-group": "node src/utils/group_seeder.js"
+    "seed-group": "node src/utils/group_seeder.js",
+    "seed-caddy": "node src/utils/caddy_seeder.js",
+    "seed-user": "node src/utils/user_seeder.js",
+    "seed-onfield": "node src/utils/onfield_seeder.js",
+    "seed-user-caddy-group": "node src/utils/seed_db.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +26,10 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "csv-parse": "^6.1.0",
     "crypto": "^1.0.1",
     "express": "^5.1.0",
+    "fs": "^0.0.1-security",
     "prisma": "^6.15.0"
   },
   "devDependencies": {
