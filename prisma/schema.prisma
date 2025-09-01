@@ -8,7 +8,7 @@ datasource db {
 }
 
 model User {
-  id       String  @id  @default(uuid())
+  id       String  @id@default(uuid())
   name     String
   password String
   role     Int
@@ -16,44 +16,44 @@ model User {
 }
 
 model Caddy {
-  id         String    @id @default(uuid())
+  id         String    @id@default(uuid())
   name       String
   caddy_type Int
   id_user    String
-  id_group   Int?
+  id_caddy_group   String?
   bookings   Booking[]
-  group      Group?    @relation(fields: [id_group], references: [id])
+  caddy_group      CaddyGroup?    @relation(fields: [id_caddy_group], references: [id])
   user       User      @relation(fields: [id_user], references: [id])
   onFields   OnField[]
 }
 
-model Group {
+model CaddyGroup {
   group_name String     @unique
-  id         Int        @id @default(autoincrement())
+  id         String        @id @default(uuid())
   caddies    Caddy[]
   liburs     Libur[]
   schedules  Schedule[]
 }
 
 model Schedule {
-  id       String   @id
+  id       String   @id@default(uuid())
   urutan   Int
   date     DateTime
   shift    Int
-  id_group Int
-  group    Group    @relation(fields: [id_group], references: [id])
+  id_caddy_group String
+  caddy_group    CaddyGroup    @relation(fields: [id_caddy_group], references: [id])
 }
 
 model Libur {
-  id         String   @id
+  id         String   @id@default(uuid())
   date       DateTime
   is_request Boolean
-  id_group   Int
-  group      Group    @relation(fields: [id_group], references: [id])
+  id_caddy_group   String
+  caddy_group      CaddyGroup    @relation(fields: [id_caddy_group], references: [id])
 }
 
 model Booking {
-  id          String   @id
+  id          String   @id@default(uuid())
   id_caddy    String
   nama_pemain String
   date        DateTime
@@ -61,7 +61,7 @@ model Booking {
 }
 
 model OnField {
-  id                String   @id @default(uuid())
+  id                String   @id@default(uuid())
   id_caddy          String
   kode              String
   nama_pemain       String

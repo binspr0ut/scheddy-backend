@@ -1,8 +1,13 @@
 import prisma from "../configs/prisma.js";
 
+// set tanggal hari ini
+const today = new Date();
+const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
 const getDetailOnField = async (req, res) => {
   try {
-    const { id_caddy } = req.query; // ambil dari query parameter ?id_caddy=xxx
+    const { id_caddy } = req.params
 
     if (!id_caddy) {
       return res.status(400).json({
@@ -12,10 +17,13 @@ const getDetailOnField = async (req, res) => {
     }
 
     // ambil 1 data onfield untuk caddy tertentu dengan status = 0
-    const onField = await prisma.onfield.findFirst({
+    const onField = await prisma.onField.findFirst({
       where: {
         id_caddy,
-        status: 0,
+        date_turun: {       // filter hanya yang tanggalnya hari ini
+            gte: startOfDay,  // gte = greater than or equal
+            lte: endOfDay,    // lt = less than
+        },
       },
       select: {
         id: true,

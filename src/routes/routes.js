@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 //router.get("/rekap/caddy_done", getCaddyDone);
-router.get("/rekap/detail_onfield", getDetailOnField)
+router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField)
 
 export default router;
