@@ -9,7 +9,7 @@ const postLibur = async (req, res) => {
       },
     });
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Create libur berhasil",
       data: libur,
     });

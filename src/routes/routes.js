@@ -1,12 +1,10 @@
 import express from "express";
-import postOnField from "../controllers/post_onfield.js";
-import putCheckout from "../controllers/put_checkout.js";
-import putUpdateDone from "../controllers/put_update_done.js";
+import postBooking from "../controllers/post_booking.js";
+import getCaddyBooking from "../controllers/get_caddy_booking.js";
 
 const router = express.Router();
 
-router.post("/rekap/onfield", postOnField);
-router.put("/rekap/checkout/:id", putCheckout);
-router.put("/rekap/update/:id", putUpdateDone);
+router.post("/booking/create", postBooking);
+router.get("/booking/get-caddy/:date", getCaddyBooking);
 
 export default router;

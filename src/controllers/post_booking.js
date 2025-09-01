@@ -1,12 +1,20 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
+import crypto from "crypto";
 
 const postBooking = async (req, res) => {
   try {
-    const checkout = await prisma.booking.create({
+    const booking = await prisma.booking.create({
       data: {
+        id: crypto.randomUUID(),
         ...req.body,
+        date: new Date(req.body.date),
       },
+    });
+
+    res.status(201).json({
+      message: "Create booking berhasil",
+      data: booking,
     });
   } catch (error) {
     console.error(error);
