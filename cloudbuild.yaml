@@ -1,0 +1,16 @@
+steps:
+# step untuk membuat file .env
+- name: 'ubuntu'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "DATABASE_URL=${_DATABASE_URL}" >> .env
+
+# step build docker
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/my-app', '.']
+
+# step push docker
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$PROJECT_ID/my-app']
