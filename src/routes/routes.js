@@ -15,11 +15,12 @@ import getCaddyBooking from "../controllers/get_caddy_booking.js";
 import getCaddyOnField from "../controllers/get_caddy_onfield.js";
 import getDetailOnField from "../controllers/get_detail_onfield.js";
 import getCaddyDone from "../controllers/get_caddy_done.js";
+import getCaddyAvailable from "../controllers/get_caddy_available.js";
 
 const router = express.Router();
 
 router.post("/booking/create", postBooking);
-router.get("/booking/get-caddy/:date", getCaddyBooking);
+router.get("/booking/get-caddy/:date", getCaddyAvailable);
 
 router.post("/libur/create", postLibur);
 

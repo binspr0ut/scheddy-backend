@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 const getCaddyAvailable = async (req, res) => {
   try {
-    const today = new Date();
+    const today = req.params.date;
     const start = new Date(today.setHours(0, 0, 0, 0));
     const end = new Date(today.setHours(23, 59, 59, 999));
 
@@ -29,4 +29,4 @@ const getCaddyAvailable = async (req, res) => {
   }
 };
 
-export default getCaddyBooking;
+export default getCaddyAvailable;
