@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
 app.use(express.json());
 app.use(RekapRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
