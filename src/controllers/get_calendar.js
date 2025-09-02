@@ -28,8 +28,10 @@ const getCalendar = async (req, res) => {
 
     res.status(200).json({
       message: "Get calendar berhasil",
-      data_libur: libur,
-      data_booking: booking,
+      data: {
+        libur: libur,
+        booking: booking,
+      },
     });
   } catch (error) {
     console.log(error);
