@@ -27,10 +27,12 @@ router.get("/calendar", getCalendar);
 router.get("/calendar/detail/:date", getCalendarDetail);
 
 router.get("/rekap/standby_caddy_sorted", getCaddyStandbySorted);
-router.get("/rekap/get_caddy_booking", getCaddyBooking)
-
+router.get("/rekap/get_caddy_booking", getCaddyBooking);
+router.post("/rekap/onfield", postOnField);
+router.put("/rekap/checkout/:id", putCheckout);
+router.put("/rekap/update/:id", putUpdateDone);
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 router.get("/rekap/caddy_done", getCaddyDone);
-router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField)
+router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField);
 
 export default router;
