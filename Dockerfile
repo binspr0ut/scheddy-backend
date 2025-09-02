@@ -2,25 +2,22 @@
 FROM node:20-alpine AS builder
 WORKDIR /usr/src/app
 
-# Install dependencies
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install --only=production
 
-# Copy source
 COPY . .
 
-# Generate Prisma Client (jika pakai Prisma)
-RUN npx prisma generate
+# Optional: generate Prisma client if schema is in src/prisma
+RUN npx prisma generate --schema=prisma/schema.prisma
 
-# Stage 2: Production image
+# Stage 2: Production
 FROM node:20-alpine
 WORKDIR /usr/src/app
 
-# Copy hasil build
-COPY --from=builder /usr/src/app /usr/src/app
+# Copy dependencies and source
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/src ./src
+COPY --from=builder /usr/src/app/package*.json ./
 
-# Expose port yang akan dipakai Cloud Run
 EXPOSE 8080
-
-# Start server
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]
