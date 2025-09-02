@@ -5,6 +5,7 @@ import putCheckout from "../controllers/put_checkout.js";
 import putUpdateDone from "../controllers/put_update_done.js";
 
 import getCaddyStandbySorted from "../controllers/get_caddy_standby_sorted.js";
+import getCaddyBooking from "../controllers/get_caddy_booking.js";
 
 import getCaddyOnField from "../controllers/get_caddy_onfield.js";
 import getDetailOnField from "../controllers/get_detail_onfield.js";
@@ -17,6 +18,7 @@ router.put("/rekap/checkout/:id", putCheckout);
 router.put("/rekap/update/:id", putUpdateDone);
 
 router.get("/rekap/standby_caddy_sorted", getCaddyStandbySorted);
+router.get("/rekap/get_caddy_booking", getCaddyBooking)
 
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 router.get("/rekap/caddy_done", getCaddyDone);
