@@ -1,15 +1,11 @@
-import { endOfDay, startOfDay, subDays, addDays } from "date-fns";
+import { endOfDay, startOfDay, addDays } from "date-fns";
 import prisma from "../configs/prisma.js";
-
-const finalResult = [];
 
 const getGeneratedSchedule = async (req, res) => {
   try {
-
     // set tanggal
     const today = new Date();
     const tomorrow = addDays(today, 1);
-    const yesterday = subDays(today, 1);
 
     // Get today’s onField entries
     const hasOnFieldToday = await prisma.onField.findMany({
@@ -28,52 +24,49 @@ const getGeneratedSchedule = async (req, res) => {
 
     // hitung jumlah turun per caddy
     const turunCountMap = {};
-
     hasOnFieldIds.forEach(id => {
-      if (!turunCountMap[id]) {
-        turunCountMap[id] = 1;
-      } else {
-        turunCountMap[id] += 1;
-      }
+      turunCountMap[id] = (turunCountMap[id] || 0) + 1;
     });
 
     // Get group libur tomorrow
     const groupLiburTomorrow = await prisma.libur.findFirst({
       where: {
         date: {
-           gte: startOfDay(tomorrow),
-           lt: endOfDay(tomorrow),
-        },
-      },
-      select: {
-        caddy_group: {
-           select: {
-            group_name: true,
-           },
-        },
-      },
-    });
-
-    const liburTomorrow = groupLiburTomorrow?.caddy_group?.group_name;
-    
-    // Get group libur yesterday
-    const groupLiburYesterday = await prisma.libur.findFirst({
-      where: {
-        date: {
-          gte: startOfDay(yesterday),
-          lt: endOfDay(yesterday),
+          gte: startOfDay(tomorrow),
+          lt: endOfDay(tomorrow),
         },
       },
       select: {
         caddy_group: {
           select: {
             group_name: true,
+            caddies: {
+              select: { id: true, name: true },
+            },
           },
         },
       },
     });
 
-    const liburYesterday = groupLiburYesterday?.caddy_group?.group_name;
+    // Get group libur today
+    const groupLiburToday = await prisma.libur.findFirst({
+      where: {
+        date: {
+          gte: startOfDay(today),
+          lt: endOfDay(today),
+        },
+      },
+      select: {
+        caddy_group: {
+          select: {
+            group_name: true,
+            caddies: {
+              select: { id: true, name: true },
+            },
+          },
+        },
+      },
+    });
 
     // Group yang akan dihitung dan diurutkan
     const allGroups = await prisma.caddyGroup.findMany({
@@ -85,53 +78,89 @@ const getGeneratedSchedule = async (req, res) => {
     });
 
     const countedGroups = allGroups.filter(
-      g => g.group_name !== liburTomorrow && g.group_name !== liburYesterday
+      g =>
+        g.group_name !== groupLiburTomorrow?.caddy_group?.group_name &&
+        g.group_name !== groupLiburToday?.caddy_group?.group_name
     );
 
     // hitung caddies tidak onfield hari ini pada setiap group
     const result = countedGroups.map(g => {
       const notOnField = g.caddies.filter(c => !hasOnFieldIds.includes(c.id));
-  
-      const allCaddiesDetail = g.caddies.map(c => ({
-        id: c.id,
-        name: c.name,
-        turunCount: turunCountMap[c.id] || 0,
-      }));
-  
+
+      const allCaddiesDetail = g.caddies
+        .map(c => ({
+          id: c.id,
+          name: c.name,
+          turunCount: turunCountMap[c.id] || 0,
+        }))
+        .sort((a, b) => a.turunCount - b.turunCount); // urut ASC
+
       return {
         group_name: g.group_name,
         notOnFieldCount: notOnField.length,
         allCaddiesDetail,
       };
     });
-  
-    // Urutkan
-    const sortedResult = result.sort((a, b) => b.notOnFieldCount - a.notOnFieldCount);
-  
+
+    // Urutkan group berdasarkan jumlah caddy tidak onfield
+    const sortedResult = result.sort(
+      (a, b) => b.notOnFieldCount - a.notOnFieldCount
+    );
+
     // Tambahkan group_order setelah sorting
     const finalGroups = sortedResult.map((g, index) => ({
       ...g,
       group_order: index + 1, // urut setelah sort
     }));
-  
+
     // Susun finalResult
     const finalResult = [
-      ...(groupLiburYesterday?.caddy_group?.group_name
+      ...(groupLiburToday?.caddy_group
         ? [
-          {
-            "Libur Yesterday": {
-              groups: [{ group_name: groupLiburYesterday.caddy_group.group_name }],
+            {
+              "Libur Today": {
+                groups: [
+                  {
+                    group_name: groupLiburToday.caddy_group.group_name,
+                    allCaddiesDetail: groupLiburToday.caddy_group.caddies
+                      .map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        turunCount: turunCountMap[c.id] || 0,
+                      }))
+                      .sort((a, b) => a.turunCount - b.turunCount), // ASC
+                  },
+                ],
+              },
             },
-          },
-        ]
-      : []),
+          ]
+        : []),
+      ...(groupLiburTomorrow?.caddy_group
+        ? [
+            {
+              "Libur Tomorrow": {
+                groups: [
+                  {
+                    group_name: groupLiburTomorrow.caddy_group.group_name,
+                    allCaddiesDetail: groupLiburTomorrow.caddy_group.caddies
+                      .map(c => ({
+                        id: c.id,
+                        name: c.name,
+                        turunCount: turunCountMap[c.id] || 0,
+                      }))
+                      .sort((a, b) => a.turunCount - b.turunCount), // ASC
+                  },
+                ],
+              },
+            },
+          ]
+        : []),
       {
         "Generated Schedule": {
           groups: finalGroups,
         },
       },
     ];
-  
 
     res.status(200).json({
       message:
