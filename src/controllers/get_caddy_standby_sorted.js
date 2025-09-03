@@ -1,76 +1,90 @@
 import { PrismaClient } from "@prisma/client";
-import { subDays, startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 const prisma = new PrismaClient();
 
 const getCaddyStandbySorted = async (req, res) => {
   try {
-    const today = new Date();
-    const yesterday = subDays(today, 1);
+    const timeZone = "Asia/Jakarta"; // WIB
+    const now = new Date();
+    const todayStartLocal = startOfDay(now);
+    const todayEndLocal = endOfDay(now);
 
-    // 1. Get schedules with their groups
+    console.log("Today Start: " + todayStartLocal)
+    console.log("Today End: " + todayEndLocal)
+
+    // Convert to UTC so it matches DB
+    const todayStart = toZonedTime(todayStartLocal, timeZone);
+    const todayEnd = toZonedTime(todayEndLocal, timeZone);
+
+    console.log("Today Start UTC: " + todayStart)
+    console.log("Today End UTC: " + todayEnd)
+
+    // 1) Get ONLY today's schedules (still including the group), ordered by urutan
     const schedules = await prisma.schedule.findMany({
-      include: {
-        caddy_group: true,
-      },
-      orderBy: {
-        urutan: "asc",
-      },
-    });
-
-    // 2. Get yesterday’s onField entries
-    const onFieldYesterday = await prisma.onField.findMany({
       where: {
-        date_turun: {
-          gte: startOfDay(yesterday),
-          lte: endOfDay(yesterday),
+        date: {
+          gte: todayStart,
+          lte: todayEnd,
         },
       },
-      select: {
-        id_caddy: true,
-      },
+      include: { caddy_group: true },
+      orderBy: { urutan: "asc" },
     });
 
-    const caddiesOnFieldYesterday = new Set(
-      onFieldYesterday.map((o) => o.id_caddy)
-    );
+    console.log(JSON.stringify(schedules, null, 2));
 
-    // 3. Attach caddies for each group, sorted + add urutan
+    // 2) Collect all caddy IDs that are on-field TODAY
+    const onFieldToday = await prisma.onField.findMany({
+      where: {
+        date_turun: {
+          gte: todayStart,
+          lte: todayEnd,
+        },
+      },
+      select: { id_caddy: true, status: true },
+    });
+
+    console.log("On Field Today: " + JSON.stringify(onFieldToday, null, 2));
+
+    const caddiesOnFieldToday = new Set(onFieldToday.map((o) => o.id_caddy));
+
+    // 3) For each schedule, attach ONLY caddies NOT on-field today, and add urutan
     const schedulesWithCaddies = await Promise.all(
       schedules.map(async (schedule) => {
         const caddies = await prisma.caddy.findMany({
-          where: {
-            id_caddy_group: schedule.id_caddy_group,
-          },
+          where: { id_caddy_group: schedule.id_caddy_group },
         });
 
-        const notOnField = caddies.filter(
-          (c) => !caddiesOnFieldYesterday.has(c.id)
-        );
-        const onField = caddies.filter((c) =>
-          caddiesOnFieldYesterday.has(c.id)
+        // NOTE: If your Caddy model uses `id` (not `id_caddy`) as PK,
+        // change `c.id_caddy` below to `c.id`.
+        const standbyCaddies = caddies.filter(
+          (c) => !caddiesOnFieldToday.has(c.id_caddy)
         );
 
-        // add urutan field to each caddy
-        const sortedCaddies = [...notOnField, ...onField].map((caddy,index) => ({
+        console.log("Standby Caddies: " + JSON.stringify(standbyCaddies, null, 2));
+
+        const caddiesWithOrder = standbyCaddies.map((caddy, index) => ({
           ...caddy,
           urutan: index + 1,
         }));
 
         return {
           ...schedule,
-          caddies: sortedCaddies,
+          caddies: caddiesWithOrder,
         };
       })
     );
 
+    // (Structure is the same: { message: string, data: [...] })
     res.status(200).json({
       message:
-        "Berhasil mendapatkan daftar Caddy sesuai urutan dengan sorting berdasarkan OnField kemarin",
+        "Berhasil mendapatkan daftar Caddy standby untuk hari ini (exclude yang OnField hari ini).",
       data: schedulesWithCaddies,
     });
   } catch (error) {
-    console.log("Get Caddy Standby Sorted ada yang error bang : " + error);
+    console.error("Get Caddy Standby Sorted error:", error);
     res.status(500).json({ message: "Internal server error" });
   } finally {
     await prisma.$disconnect();
