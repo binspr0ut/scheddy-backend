@@ -10,8 +10,8 @@ const seedSchedulesAndOnField = async (req, res) => {
             return res.status(400).json({ message: "Please provide start and end dates (YYYY-MM-DD)" });
         }
 
-        const startDate = parseISO(start);
-        const endDate = parseISO(end);
+        const startDate = parseISO(start).toISOString();
+        const endDate = parseISO(end).toISOString();
 
         console.log("Start date: " + startDate)
         console.log("End date: " + endDate)
@@ -30,7 +30,9 @@ const seedSchedulesAndOnField = async (req, res) => {
         console.log("Current Date: " + currentDate)
 
         while (currentDate <= endDate) {
-            const dateStr = formatISO(currentDate, { representation: "date" });
+            // const dateStr = formatISO(currentDate, { representation: "date" });
+            const dateStr = startDate.split("T")[0];
+            console.log("Date String: " + dateStr)
 
             // Step 1: Look at yesterday’s schedule & onfield
             const yesterday = addDays(currentDate, -1);
@@ -76,7 +78,7 @@ const seedSchedulesAndOnField = async (req, res) => {
                 );
             }
 
-            console.log("Yesterday rest group (yang sekarang main) : " + yesterdayRestGroup)
+            console.log("Yesterday rest group (yang sekarang main) : " + JSON.stringify(yesterdayRestGroup))
 
             // Step 2: Today’s groups
             let todayGroups;
@@ -92,7 +94,7 @@ const seedSchedulesAndOnField = async (req, res) => {
                 orderedGroups.push(yesterdayRestGroup); // rest group goes first
             }
 
-            console.log("Ordered groups (harusnya yesterday rest yang pertama) : " + orderedGroups)
+            console.log("Ordered groups (harusnya yesterday rest yang pertama) : " + JSON.stringify(orderedGroups))
 
             const withUnplayed = [];
             const allPlayed = [];
@@ -101,7 +103,7 @@ const seedSchedulesAndOnField = async (req, res) => {
                 const caddies = group.caddies;
                 const playedCaddies = yesterdayOnField.map(o => o.id_caddy);
 
-                const hasUnplayed = caddies.some(c => !playedCaddies.includes(c.id));
+                const hasUnplayed = caddies.some(c => !playedCaddies.includes(c.id));``
 
                 if (hasUnplayed) {
                     withUnplayed.push(group);
@@ -113,7 +115,7 @@ const seedSchedulesAndOnField = async (req, res) => {
             orderedGroups = [...orderedGroups, ...withUnplayed, ...allPlayed];
 
             // Step 4: Insert schedules
-            for (let i = 0; i < orderedGroups.length; i++) {
+            for (let i = 0; i < orderedGroups.length - 1; i++) {
                 const group = orderedGroups[i];
 
                 await prisma.schedule.create({
@@ -132,7 +134,7 @@ const seedSchedulesAndOnField = async (req, res) => {
                     id_caddy_group: group.id
                 }
 
-                console.log("Yang mau di insert ke schedule: " + dataSchedule)
+                console.log("Yang mau di insert ke schedule: " + JSON.stringify(dataSchedule))
 
                 // Step 5: Random OnField seeding
                 const caddies = group.caddies;
