@@ -18,6 +18,8 @@ import getCaddyOnField from "../controllers/get_caddy_onfield.js";
 import getDetailOnField from "../controllers/get_detail_onfield.js";
 import getCaddyDone from "../controllers/get_caddy_done.js";
 
+import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js"
+
 const router = express.Router();
 
 router.post("/booking/create", postBooking);
@@ -42,5 +44,7 @@ router.get("/seed/schedule_onfield", seedSchedulesAndOnField)
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 router.get("/rekap/caddy_done", getCaddyDone);
 router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField);
+
+router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
 
 export default router;
