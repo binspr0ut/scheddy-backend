@@ -19,6 +19,7 @@ import getDetailOnField from "../controllers/get_detail_onfield.js";
 import getCaddyDone from "../controllers/get_caddy_done.js";
 
 import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js"
+import seedLibur from "../utils/seed_libur.js";
 
 const router = express.Router();
 
@@ -40,6 +41,7 @@ router.get("/rekap/standby_caddy_sorted", getCaddyStandbySorted);
 router.get("/rekap/get_caddy_booking", getCaddyBooking)
 
 router.get("/seed/schedule_onfield", seedSchedulesAndOnField)
+router.post("/seed/libur", seedLibur)
 
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 router.get("/rekap/caddy_done", getCaddyDone);
