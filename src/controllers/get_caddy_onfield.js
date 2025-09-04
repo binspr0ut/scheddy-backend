@@ -8,17 +8,55 @@ const endOfDay = new Date(today.setHours(23, 59, 59, 999));
 // get caddy dengan status onfield pada hari ini
 const getCaddyOnField = async (req, res) => {
   try {
+    // const groups = await prisma.caddyGroup.findMany({
+    //   select: {
+    //     group_name: true,           // join tabel group dan caddy
+    //     caddies: {
+    //       where: {
+    //         onFields: {             // join tabel onfield
+    //           some: {
+    //             status: 0,          // filter status onfield
+    //             date_turun: {       // filter hanya yang tanggalnya hari ini
+    //               gte: startOfDay,  // gte = greater than or equal
+    //               lte: endOfDay,    // lt = less than
+    //             },
+    //           },
+    //         },
+    //       },
+    //       select: {
+    //         id: true,
+    //         name: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // // Bentuk ulang JSON ke struktur yang diinginkan
+    // const result = groups.map((g) => ({
+    //   group: {
+    //     nama: g.group_name,
+    //     caddies: g.caddies.map((c) => ({
+    //       id: c.id,
+    //       nama: c.name,
+    //     })),
+    //   },
+    // }));
+
+    console.log("Start Of Day: " + startOfDay)
+    console.log("End Of Day: " + endOfDay)
+    console.log("Today: " + today)
+
     const groups = await prisma.caddyGroup.findMany({
       select: {
-        group_name: true,           // join tabel group dan caddy
+        group_name: true,
         caddies: {
           where: {
-            onFields: {             // join tabel onfield
+            onFields: {
               some: {
-                status: 0,          // filter status onfield
-                date_turun: {       // filter hanya yang tanggalnya hari ini
-                  gte: startOfDay,  // gte = greater than or equal
-                  lte: endOfDay,    // lt = less than
+                status: 0,
+                date_turun: {
+                  gte: startOfDay,
+                  lte: endOfDay,
                 },
               },
             },
@@ -26,18 +64,31 @@ const getCaddyOnField = async (req, res) => {
           select: {
             id: true,
             name: true,
+            onFields: {
+              where: {
+                status: 0,
+                date_turun: {
+                  gte: startOfDay,
+                  lte: endOfDay,
+                },
+              },
+              select: {
+                date_turun: true,
+              },
+            },
           },
         },
       },
     });
 
-    // Bentuk ulang JSON ke struktur yang diinginkan
+    // Bentuk ulang JSON
     const result = groups.map((g) => ({
       group: {
         nama: g.group_name,
         caddies: g.caddies.map((c) => ({
           id: c.id,
           nama: c.name,
+          date_turun: c.onFields.length > 0 ? c.onFields[0].date_turun : null, // ambil tanggal pertama
         })),
       },
     }));
