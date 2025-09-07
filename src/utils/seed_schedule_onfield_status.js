@@ -158,6 +158,8 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
                         pNoCaddy++
                     }
 
+                    pNoCaddy = 0
+
                 } else if (i === randomGrupYangMauOnFieldDiTanggalItu) {
                     console.log("INI I NYA : " + i + " TERUS randomGrupYangMauOnFieldDiTanggalItu : " + randomGrupYangMauOnFieldDiTanggalItu)
 
@@ -178,9 +180,14 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
                     const jamNyaBang = new Date(startOfDay)
 
                     let pNoCaddy = 1
-                    for (const caddy of yangMauMainSebagianBerapa) {
+                    for (const caddy of caddyDiIYangMauDiOnField) {
 
-                        console.log("CADDY NYA ADA SEGINI BANG : " + yangMauMainSebagianBerapa.length)
+                        if (pNoCaddy === yangMauMainSebagianBerapa) {
+                            console.log("OKEH UDAH SELESAI MASUKKINNYA")
+                            break
+                        }
+
+                        // console.log("CADDY NYA ADA SEGINI BANG : " + yangMauMainSebagianBerapa)
                         console.log("P NO CADDY : " + pNoCaddy)
 
                         jamNyaBang.setMinutes(jamNyaBang.getMinutes() + i * 5)
@@ -209,6 +216,8 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
 
                         pNoCaddy++
                     }
+
+                    pNoCaddy = 0
 
 
                 } else {
