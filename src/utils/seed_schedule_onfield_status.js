@@ -101,36 +101,120 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
         if (yangOnFieldKemaren.length < 1) {
             console.log("GAADA YANG MAIN BANG")
 
+            // random grup yang mau onfield (Group 1 - Group 8)
+            const randomGrupYangMauOnFieldDiTanggalItu = Math.floor(Math.random() * grupYangMain.length + 1)
+            console.log("GRUP YANG MAU DI ON FIELD ADALAH GRUP 1 - " + randomGrupYangMauOnFieldDiTanggalItu)
             let i = 1
 
             for (const grup of grupYangMain) {
                 console.log("CURRENT GRUP YANG MAU DI PUSH DI IF : " + JSON.stringify(grup))
                 grup.group_name.includes(`${i}`) ? orderedArray.push(grup) : ""
 
-                // random grup yang mau onfield (Group 1 - Group 8)
-                const randomGrupYangMauOnFieldDiTanggalItu = Math.floor(Math.random() * 9)
-                console.log("GRUP YANG MAU DI ON FIELD ADALAH GRUP 1 - " + randomGrupYangMauOnFieldDiTanggalItu)
+                if (i < randomGrupYangMauOnFieldDiTanggalItu) {
+                    console.log("I MASIH : " + i)
 
-                for (let i = 1; i <= randomGrupYangMauOnFieldDiTanggalItu; i++) {
+                    const caddyDiIYangMauDiOnField = await prisma.caddy.findMany({
+                        where: {
+                            id_caddy_group: grup.id
+                        }
+                    })
 
-                    if (i === randomGrupYangMauOnFieldDiTanggalItu) {
+                    console.log("CADDY NYA ADA SEGINI BANG : " + caddyDiIYangMauDiOnField.length)
 
-                        const jumlahCaddyDiGrup = await prisma.caddy.count({
-                            where: {
-                                id_caddy_group: grup.id
-                            }
-                        })
+                    //tinggal di push ke onField tapi waktunya increment
 
-                        console.log("JUMLAH CADDY DI " + grup.group_name + " ADALAH " + jumlahCaddyDiGrup)
+                    const jamNyaBang = new Date(startOfDay)
 
-                        //random grup terakhir yang mau di onfield
-                        const randomYangMauDiOnFieldDiGrupTerakhir = Math.floor(Math.random() * jumlahCaddyDiGrup)
-                    } else {
-                        // seed ke onfield semua
+                    let pNoCaddy = 1
+                    for (const caddy of caddyDiIYangMauDiOnField) {
+
+                        console.log("CADDY NYA ADA SEGINI BANG : " + caddyDiIYangMauDiOnField.length)
+                        console.log("P NO CADDY : " + pNoCaddy)
+
+                        jamNyaBang.setMinutes(jamNyaBang.getMinutes() + i * 5)
+
+                        console.log("JAM NYA BANG : " + jamNyaBang)
+
+                        const data = {
+                            id_caddy: caddy.id,
+                            kode: `${pNoCaddy + 100}`,
+                            nama_pemain: `Pemain Yanto ${pNoCaddy + 1}`,
+                            date_turun: jamNyaBang,
+                            booked: false,
+                            status: 0,
+                            wood_quantity: 0,
+                            iron_quantity: 0,
+                            putter_quantity: 0,
+                            umbrella_quantity: 0,
+
+                        }
+
+                        // const yokPushSemua = await prisma.onField.create({
+                        //     data: data
+                        // })
+
+                        console.log("DATA YANG MAU DI PUSH : " + JSON.stringify(data))
+
+                        pNoCaddy++
                     }
 
-                }
+                } else if (i === randomGrupYangMauOnFieldDiTanggalItu) {
+                    console.log("INI I NYA : " + i + " TERUS randomGrupYangMauOnFieldDiTanggalItu : " + randomGrupYangMauOnFieldDiTanggalItu)
 
+                    const caddyDiIYangMauDiOnField = await prisma.caddy.findMany({
+                        where: {
+                            id_caddy_group: grup.id
+                        }
+                    })
+
+                    console.log("CADDY NYA ADA SEGINI BANG : " + caddyDiIYangMauDiOnField.length)
+
+                    // random grup ini yang mau main sebagian berapa
+                    const yangMauMainSebagianBerapa = Math.floor(Math.random() * caddyDiIYangMauDiOnField.length)
+                    console.log("SEBAGIAN CADDY YANG MAIN ADA SEBANYAK : " + yangMauMainSebagianBerapa)
+
+                    //tinggal di push ke onField tapi waktunya increment
+
+                    const jamNyaBang = new Date(startOfDay)
+
+                    let pNoCaddy = 1
+                    for (const caddy of yangMauMainSebagianBerapa) {
+
+                        console.log("CADDY NYA ADA SEGINI BANG : " + yangMauMainSebagianBerapa.length)
+                        console.log("P NO CADDY : " + pNoCaddy)
+
+                        jamNyaBang.setMinutes(jamNyaBang.getMinutes() + i * 5)
+
+                        console.log("JAM NYA BANG : " + jamNyaBang)
+
+                        const data = {
+                            id_caddy: caddy.id,
+                            kode: `${pNoCaddy + 100}`,
+                            nama_pemain: `Pemain Yanto ${pNoCaddy + 1}`,
+                            date_turun: jamNyaBang,
+                            booked: false,
+                            status: 0,
+                            wood_quantity: 0,
+                            iron_quantity: 0,
+                            putter_quantity: 0,
+                            umbrella_quantity: 0,
+
+                        }
+
+                        // const yokPushSemua = await prisma.onField.create({
+                        //     data: data
+                        // })
+
+                        console.log("DATA YANG MAU DI PUSH : " + JSON.stringify(data))
+
+                        pNoCaddy++
+                    }
+
+
+                } else {
+                    console.log("UDAH BANG")
+                }
+                i++
             }
 
         } else {
