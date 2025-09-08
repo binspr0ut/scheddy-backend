@@ -23,6 +23,8 @@ import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js
 import seedLibur from "../utils/seed_libur.js";
 import seedSchedulesOnFieldAndStatus from "../utils/seed_schedule_onfield_status.js";
 
+import getCaddyFee from "../controllers/get_caddy_fee.js";
+
 const router = express.Router();
 
 router.post("/booking/create", postBooking);
@@ -53,5 +55,6 @@ router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField);
 router.post("/schedule/create", postSchedule);
 router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
 
+router.get("/fee/get_caddy_fee", getCaddyFee)
 
 export default router;
