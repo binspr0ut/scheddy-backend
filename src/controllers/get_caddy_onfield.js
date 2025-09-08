@@ -72,6 +72,9 @@ const getCaddyOnField = async (req, res) => {
                   lte: endOfDay,
                 },
               },
+              orderBy: {
+                date_turun: "asc",
+              },
               select: {
                 date_turun: true,
               },

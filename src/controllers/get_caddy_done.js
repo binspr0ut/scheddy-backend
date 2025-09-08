@@ -23,6 +23,9 @@ const getCaddyDone = async (req, res) => {
               },
             },
           },
+          orderBy: {
+            name: "asc"
+          },
           select: {
             id: true,
             name: true,
