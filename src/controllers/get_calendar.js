@@ -8,23 +8,49 @@ const getCalendar = async (req, res) => {
     const start = new Date(`${year}-${month}-1`);
     const end = new Date(`${year}-${month}-31`);
 
-    const libur = await prisma.libur.findMany({
+    const liburRaw = await prisma.libur.findMany({
       where: {
         date: {
           gte: start,
           lte: end,
+        },
+      },
+      include: {
+        caddy_group: {
+          select: {
+            group_name: true,
+          },
         },
       },
     });
 
-    const booking = await prisma.booking.findMany({
+    const bookingRaw = await prisma.booking.findMany({
       where: {
         date: {
           gte: start,
           lte: end,
         },
       },
+      include: {
+        caddy: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
+
+    const libur = liburRaw.map((l) => ({
+      ...l,
+      group_name: l.caddy_group?.group_name || null,
+      caddy_group: undefined,
+    }));
+
+    const booking = bookingRaw.map((b) => ({
+      ...b,
+      caddy_name: b.caddy?.name || null,
+      caddy: undefined,
+    }));
 
     res.status(200).json({
       message: "Get calendar berhasil",
