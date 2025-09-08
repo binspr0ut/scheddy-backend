@@ -1,47 +1,14 @@
 import prisma from "../configs/prisma.js";
-
-// set tanggal hari ini
-const today = new Date();
-const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+import { startOfDay, endOfDay, addDays } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 // get caddy dengan status onfield pada hari ini
 const getCaddyOnField = async (req, res) => {
   try {
-    // const groups = await prisma.caddyGroup.findMany({
-    //   select: {
-    //     group_name: true,           // join tabel group dan caddy
-    //     caddies: {
-    //       where: {
-    //         onFields: {             // join tabel onfield
-    //           some: {
-    //             status: 0,          // filter status onfield
-    //             date_turun: {       // filter hanya yang tanggalnya hari ini
-    //               gte: startOfDay,  // gte = greater than or equal
-    //               lte: endOfDay,    // lt = less than
-    //             },
-    //           },
-    //         },
-    //       },
-    //       select: {
-    //         id: true,
-    //         name: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // // Bentuk ulang JSON ke struktur yang diinginkan
-    // const result = groups.map((g) => ({
-    //   group: {
-    //     nama: g.group_name,
-    //     caddies: g.caddies.map((c) => ({
-    //       id: c.id,
-    //       nama: c.name,
-    //     })),
-    //   },
-    // }));
-
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    
     console.log("Start Of Day: " + startOfDay)
     console.log("End Of Day: " + endOfDay)
     console.log("Today: " + today)
