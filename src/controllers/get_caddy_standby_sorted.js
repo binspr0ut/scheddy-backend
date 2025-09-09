@@ -86,10 +86,16 @@ const getCaddyStandbySorted = async (req, res) => {
       })
     );
 
+    console.log("SCHEDULES WITH CADDIES BANG: " + JSON.stringify(schedulesWithCaddies));
+
     // (Structure is the same: { message: string, data: [...] })
     res.status(200).json({
       message:
         "Berhasil mendapatkan daftar Caddy standby untuk hari ini (exclude yang OnField hari ini).",
+      time: {
+        todayStart: todayStart,
+        todayEnd: todayEnd,
+      },
       data: schedulesWithCaddies,
     });
   } catch (error) {
