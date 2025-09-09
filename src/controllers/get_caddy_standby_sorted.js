@@ -14,12 +14,12 @@ const getCaddyStandbySorted = async (req, res) => {
     console.log("Today Start: " + todayStartLocal)
     console.log("Today End: " + todayEndLocal)
 
-    const todayStartShifted = subHours(todayStartLocal, 7);
-    const todayEndShifted = subHours(todayEndLocal, 7);
+    // const todayStartShifted = subHours(todayStartLocal, 7);
+    // const todayEndShifted = subHours(todayEndLocal, 7);
 
     // Convert to UTC so it matches DB
-    const todayStart = toZonedTime(todayStartShifted, timeZone);
-    const todayEnd = toZonedTime(todayEndShifted, timeZone);
+    const todayStart = toZonedTime(todayStartLocal, timeZone);
+    const todayEnd = toZonedTime(todayEndLocal, timeZone);
 
     console.log("Today Start UTC: " + todayStart)
     console.log("Today End UTC: " + todayEnd)
