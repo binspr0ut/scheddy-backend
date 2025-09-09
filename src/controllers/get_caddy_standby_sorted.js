@@ -8,18 +8,20 @@ const getCaddyStandbySorted = async (req, res) => {
   try {
     const timeZone = "Asia/Jakarta"; // WIB
     const now = new Date();
-    const todayStartLocal = startOfDay(now);
-    const todayEndLocal = endOfDay(now);
+    // const todayStartLocal = startOfDay(now);
+    // const todayEndLocal = endOfDay(now);
+    const todayStart = startOfDay(now);
+    const todayEnd = endOfDay(now);
 
-    console.log("Today Start: " + todayStartLocal)
-    console.log("Today End: " + todayEndLocal)
+    // console.log("Today Start: " + todayStartLocal)
+    // console.log("Today End: " + todayEndLocal)
 
     // const todayStartShifted = subHours(todayStartLocal, 7);
     // const todayEndShifted = subHours(todayEndLocal, 7);
 
     // Convert to UTC so it matches DB
-    const todayStart = toZonedTime(todayStartLocal, timeZone);
-    const todayEnd = toZonedTime(todayEndLocal, timeZone);
+    // const todayStart = toZonedTime(todayStartLocal, timeZone);
+    // const todayEnd = toZonedTime(todayEndLocal, timeZone);
 
     console.log("Today Start UTC: " + todayStart)
     console.log("Today End UTC: " + todayEnd)
