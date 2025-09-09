@@ -7,6 +7,10 @@ const getCaddyDone = async (req, res) => {
     const today = new Date();
     const startOfDay = new Date(today.setHours(0, 0, 0, 0));
     const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+    console.log("Start Of Day: " + startOfDay)
+    console.log("End Of Day: " + endOfDay)
+    console.log("Today: " + today)
     
     const groups = await prisma.caddyGroup.findMany({
       select: {
@@ -35,7 +39,7 @@ const getCaddyDone = async (req, res) => {
                 },
               },
               orderBy: {
-                name: "asc",
+                date_turun: "asc",
               },
               select: {
                 date_turun: true,
