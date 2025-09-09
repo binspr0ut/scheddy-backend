@@ -1,34 +1,46 @@
 import prisma from "../configs/prisma.js";
 
-// set tanggal hari ini
-const today = new Date();
-const startOfDay = new Date(today.setHours(0, 0, 0, 0));
-const endOfDay = new Date(today.setHours(23, 59, 59, 999));
-
 // get caddy dengan status done pada hari ini
 const getCaddyDone = async (req, res) => {
   try {
+    // set tanggal hari ini
+    const today = new Date();
+    const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+    
     const groups = await prisma.caddyGroup.findMany({
       select: {
-        group_name: true,           // join tabel group dan caddy
+        group_name: true,
         caddies: {
           where: {
-            onFields: {             // join tabel onfield
+            onFields: {
               some: {
-                status: 1,          // filter status done
-                date_turun: {       // filter hanya yang tanggalnya hari ini
-                  gte: startOfDay,  // gte = greater than or equal
-                  lte: endOfDay,    // lt = less than
+                status: 1,
+                date_turun: {
+                  gte: startOfDay,
+                  lte: endOfDay,
                 },
               },
             },
           },
-          orderBy: {
-            name: "asc"
-          },
           select: {
             id: true,
             name: true,
+            onFields: {
+              where: {
+                status: 0,
+                date_turun: {
+                  gte: startOfDay,
+                  lte: endOfDay,
+                },
+              },
+              orderBy: {
+                name: "asc",
+              },
+              select: {
+                date_turun: true,
+              },
+            },
           },
         },
       },
