@@ -110,6 +110,17 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
                 console.log("CURRENT GRUP YANG MAU DI PUSH DI IF : " + JSON.stringify(grup))
                 grup.group_name.includes(`${i}`) ? orderedArray.push(grup) : ""
 
+                const masukinGrupKeTable = await prisma.schedule.create({
+                    data: {
+                        date: startOfDay,
+                        shift: i < 5 ? 0 : 1,
+                        urutan: i,
+                        id_caddy_group: grup.id
+                    }
+                })
+
+                console.log("MASUKIN GRUP KE TABLE : " + JSON.stringify(masukinGrupKeTable))
+
                 if (i < randomGrupYangMauOnFieldDiTanggalItu) {
                     console.log("I MASIH : " + i)
 
@@ -149,9 +160,9 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
 
                         }
 
-                        // const yokPushSemua = await prisma.onField.create({
-                        //     data: data
-                        // })
+                        const yokPushSemua = await prisma.onField.create({
+                            data: data
+                        })
 
                         console.log("DATA YANG MAU DI PUSH : " + JSON.stringify(data))
 
@@ -208,9 +219,9 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
 
                         }
 
-                        // const yokPushSemua = await prisma.onField.create({
-                        //     data: data
-                        // })
+                        const yokPushSemua = await prisma.onField.create({
+                            data: data
+                        })
 
                         console.log("DATA YANG MAU DI PUSH : " + JSON.stringify(data))
 
