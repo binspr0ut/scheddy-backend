@@ -230,7 +230,6 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
 
                     pNoCaddy = 0
 
-
                 } else {
                     console.log("UDAH BANG")
                 }

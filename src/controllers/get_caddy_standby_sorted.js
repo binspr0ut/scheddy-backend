@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { startOfDay, endOfDay } from "date-fns";
+import { startOfDay, endOfDay, subHours } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 
 const prisma = new PrismaClient();
@@ -13,6 +13,9 @@ const getCaddyStandbySorted = async (req, res) => {
 
     console.log("Today Start: " + todayStartLocal)
     console.log("Today End: " + todayEndLocal)
+
+    // const todayStartShifted = subHours(todayStartLocal, 7);
+    // const todayEndShifted = subHours(todayEndLocal, 7);
 
     // Convert to UTC so it matches DB
     const todayStart = toZonedTime(todayStartLocal, timeZone);
@@ -33,7 +36,7 @@ const getCaddyStandbySorted = async (req, res) => {
       orderBy: { urutan: "asc" },
     });
 
-    console.log(JSON.stringify(schedules, null, 2));
+    console.log("SCHEDULES TODAY BANG : " + JSON.stringify(schedules));
 
     // 2) Collect all caddy IDs that are on-field TODAY
     const onFieldToday = await prisma.onField.findMany({
@@ -46,9 +49,12 @@ const getCaddyStandbySorted = async (req, res) => {
       select: { id_caddy: true, status: true },
     });
 
-    console.log("On Field Today: " + JSON.stringify(onFieldToday, null, 2));
+    console.log("ON FIELD TODAY BANG: " + JSON.stringify(onFieldToday));
 
     const caddiesOnFieldToday = new Set(onFieldToday.map((o) => o.id_caddy));
+
+    console.log("CADDIES ON FIELD TODAY BANG: " + [...caddiesOnFieldToday]);
+    console.log("CADDIES ON FIELD TODAY BANG: " + caddiesOnFieldToday.size);
 
     // 3) For each schedule, attach ONLY caddies NOT on-field today, and add urutan
     const schedulesWithCaddies = await Promise.all(
@@ -57,13 +63,16 @@ const getCaddyStandbySorted = async (req, res) => {
           where: { id_caddy_group: schedule.id_caddy_group },
         });
 
+        console.log("CADDIES BUAT GRUP : " + schedule.id_caddy_group + " ADA : " + caddies.length);
+
         // NOTE: If your Caddy model uses `id` (not `id_caddy`) as PK,
         // change `c.id_caddy` below to `c.id`.
         const standbyCaddies = caddies.filter(
-          (c) => !caddiesOnFieldToday.has(c.id_caddy)
+          (c) => !caddiesOnFieldToday.has(c.id)
         );
 
-        console.log("Standby Caddies: " + JSON.stringify(standbyCaddies, null, 2));
+        console.log("STANDBY CADDIES BANG: " + standbyCaddies.length);
+        // console.log("STANDBY CADDIES BANG : " + JSON.stringify(standbyCaddies, null, 2));
 
         const caddiesWithOrder = standbyCaddies.map((caddy, index) => ({
           ...caddy,
