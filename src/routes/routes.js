@@ -22,6 +22,7 @@ import postSchedule from "../controllers/post_schedule.js";
 import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js"
 import seedLibur from "../utils/seed_libur.js";
 import seedSchedulesOnFieldAndStatus from "../utils/seed_schedule_onfield_status.js";
+import seedOnField from "../utils/onfield_seeder.js";
 
 import getCaddyFee from "../controllers/get_caddy_fee.js";
 
@@ -46,6 +47,7 @@ router.get("/rekap/get_caddy_booking", getCaddyBooking)
 
 router.get("/seed/schedule_onfield", seedSchedulesAndOnField)
 router.post("/seed/libur", seedLibur)
+router.post("/seed/onfield", seedOnField)
 router.post("/seed/schedule_onfield_status", seedSchedulesOnFieldAndStatus)
 
 router.get("/rekap/caddy_onfield", getCaddyOnField);
