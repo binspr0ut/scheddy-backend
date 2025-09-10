@@ -25,7 +25,9 @@ import seedSchedulesOnFieldAndStatus from "../utils/seed_schedule_onfield_status
 import seedOnField from "../utils/onfield_seeder.js";
 
 import getCaddyFee from "../controllers/get_caddy_fee.js";
+import getCalendarNextMonth from "../controllers/get_calendar_next_month.js";
 import generateLiburByMonth from "../controllers/post_generate_libur.js";
+
 
 const router = express.Router();
 
@@ -35,6 +37,7 @@ router.get("/booking/get-caddy/:date", getCaddyAvailable);
 router.post("/libur/create", postLibur);
 
 router.get("/calendar", getCalendar);
+router.get("/calendar/:month", getCalendarNextMonth);
 router.get("/calendar/detail/:date", getCalendarDetail);
 
 router.get("/rekap/standby_caddy_sorted", getCaddyStandbySorted);
