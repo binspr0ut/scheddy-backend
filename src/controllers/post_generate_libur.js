@@ -10,9 +10,12 @@ const START_DATE = new Date("2025-09-09"); // fallback if table empty
 
 // Utility: count cycles in month
 function countCyclesInMonth(monthString) {
-    const firstDay = parse(monthString, "MMMM yyyy", new Date());
-    const start = startOfMonth(firstDay);
-    const end = endOfMonth(firstDay);
+    const [monthNum, yearStr] = monthString.split(" ");
+    const year = parseInt(yearStr, 10);
+    const monthIndex = parseInt(monthNum, 10) - 1;
+
+    const start = startOfMonth(new Date(year, monthIndex, 1));
+    const end = endOfMonth(start);
 
     let cycles = 0;
     let current = start;
@@ -61,17 +64,43 @@ function nextWorkingDay(date) {
 const generateLiburByMonth = async (req, res) => {
 
     try {
-        const { bulan } = req.body;
+        const { bulan } = req.body; 
+
+        // Parse bulan & tahun (request body: "09 2025" atau "01 2025")
+        const [monthNum, yearStr] = bulan.split(" ");
+        const year = parseInt(yearStr, 10);
+        const monthIndex = parseInt(monthNum, 10) - 1; // 0 = Jan, 11 = Dec
+
+        // Range awal & akhir bulan
+        const startDate = new Date(year, monthIndex, 1, 0, 0, 0);
+        const endDate = new Date(year, monthIndex + 1, 1, 0, 0, 0);
+
+        // cek apakah sudah ada data libur di bulan ini
+        const availabilityLibur = await prisma.libur.findFirst({
+          where: {
+            date: {
+              gte: startDate,
+              lt: endDate,
+            },
+          },
+        });
+
+        if (availabilityLibur) {
+          return res.status(200).json({
+            success: true,
+            message: "data sudah ada dalam database",
+          });
+        }
 
         const cycles = countCyclesInMonth(bulan);
-        console.log("CYCLES : " + cycles)
+        // console.log("CYCLES : " + cycles)
 
         // 1) Load groups and sort by number in "Group N"
         const groupsRaw = await prisma.caddyGroup.findMany({
             select: { id: true, group_name: true },
         });
 
-        console.log("GROUPS RAW : " + JSON.stringify(groupsRaw))
+        // console.log("GROUPS RAW : " + JSON.stringify(groupsRaw))
 
         const groups = [...groupsRaw].sort((a, b) => {
             const numA = parseInt(a.group_name.split(" ")[1], 10);
@@ -79,8 +108,8 @@ const generateLiburByMonth = async (req, res) => {
             return numA - numB;
         });
 
-        console.log("GROUPS FOUND : " + groups)
-        console.log("GROUPS FOUND : " + JSON.stringify(groups))
+        // console.log("GROUPS FOUND : " + groups)
+        // console.log("GROUPS FOUND : " + JSON.stringify(groups))
 
         if (groups.length === 0) {
             return res.status(400).json({ error: "No groups found." });
@@ -92,7 +121,7 @@ const generateLiburByMonth = async (req, res) => {
         const completedCycles = Math.floor(totalRecords / groups.length);
         let offset = completedCycles % WEEKDAYS.length; // rotate Tue→Wed→Thu→Fri each cycle
 
-        console.log("LAST LIBURR : " + JSON.stringify(lastLibur))
+        // console.log("LAST LIBURR : " + JSON.stringify(lastLibur))
 
         let currentDate;
         let startIndex; // index in groups[] to start from this generation run
@@ -124,11 +153,11 @@ const generateLiburByMonth = async (req, res) => {
                     currentDate.getMonth() !== targetMonth ||
                     currentDate.getFullYear() !== targetYear
                 ) {
-                    console.log("CURRENT MONTH : " + currentDate.getMonth())
-                    console.log("TARGET MONTH : " + targetMonth)
-                    console.log("CURRENT YEAR : " + currentDate.getFullYear())
-                    console.log("TARGET YEAR : " + targetYear)
-                    console.log("BREAK INNER LOOP")
+                    // console.log("CURRENT MONTH : " + currentDate.getMonth())
+                    // console.log("TARGET MONTH : " + targetMonth)
+                    // console.log("CURRENT YEAR : " + currentDate.getFullYear())
+                    // console.log("TARGET YEAR : " + targetYear)
+                    // console.log("BREAK INNER LOOP")
                     break; // break inner loop
                 }
 
@@ -143,11 +172,11 @@ const generateLiburByMonth = async (req, res) => {
                 };
 
                 // Log with group_name 
-                console.log("CURRENT DATA :", JSON.stringify({
-                    ...payload,
-                    weekday: getWeekday(currentDate),
-                    group_name: group.group_name,
-                }));
+                // console.log("CURRENT DATA :", JSON.stringify({
+                //     ...payload,
+                //     weekday: getWeekday(currentDate),
+                //     group_name: group.group_name,
+                // }));
 
                 await prisma.libur.create({
                     data: {
@@ -164,7 +193,7 @@ const generateLiburByMonth = async (req, res) => {
                     id_caddy_group: group.id,
                 }
 
-                console.log("DATA : " + JSON.stringify(data))
+                // console.log("DATA : " + JSON.stringify(data))
 
                 results.push({
                     id_group: group.id,
