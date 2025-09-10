@@ -237,14 +237,65 @@ const seedSchedulesOnFieldAndStatus = async (req, res) => {
             }
 
         } else {
+
+            const arrayKaloAdaYangMainKemaren = []
+
+            console.log("START OF DAY KALO ADA YANG MAIN KEMAREN : " + startOfDay)
+            console.log("END OF DAY KALO ADA YANG MAIN KEMAREN : " + endOfDay)
+
+            // const yangLiburHariIniKaloAdaYangMainKemaren = await prisma.libur.findFirst({
+            //     where: {
+            //         date: {
+            //             gte: kemarenGte,
+            //             lte: kemarenLte
+            //         }
+            //     }
+            // })
+
+            // arrayKaloAdaYangMainKemaren.push(yangLiburHariIniKaloAdaYangMainKemaren)
+            // console.log("YANG DI PUSH KE ARRAY KALO ADA YANG MAIN KEMAREN : " + JSON.stringify(yangLiburHariIniKaloAdaYangMainKemaren))
+
             for (const grup of grupYangMain) {
                 const perGrupPerHari = yangOnFieldKemaren.filter(ym => ym.caddy.id_caddy_group == grup.id)
+                console.log("GRUP INI BANG : " + JSON.stringify(grup))
                 console.log("PER GRUPP : " + perGrupPerHari.length)
-            }
-        }
 
-        // const kemarenRapi = kemaren.toISOString().split("T")[0]
-        // console.log("KEMARENN RAPI : " + kemarenRapi)
+                let priority = 1
+
+                if (perGrupPerHari.length < 23 && perGrupPerHari.length > 0) {
+                    // arrayKaloAdaYangMainKemaren.push(grup)
+                    priority = 1
+                } else if (perGrupPerHari.length == 23) {
+                    // arrayKaloAdaYangMainKemaren.push(grup)
+                    priority = 2
+                } else if (perGrupPerHari.length == 0) {
+                    // arrayKaloAdaYangMainKemaren.push(grup)
+                    priority = 0
+                }
+
+                arrayKaloAdaYangMainKemaren.push({ grup, priority });
+            }
+
+            arrayKaloAdaYangMainKemaren.sort((a, b) => a.priority - b.priority);
+
+            const result = arrayKaloAdaYangMainKemaren.map(item => item.grup);
+
+            console.log("RESULT : " + JSON.stringify(result))
+
+            const schedulesData = result.map((grup, index) => ({
+                urutan: index + 1, // start from 1
+                date: new Date(date), // make sure this is a valid Date
+                shift: index < 4 ? 0: 1,
+                id_caddy_group: grup.id,
+            }));
+
+            console.log("SCHEDULES DATA : " + JSON.stringify(schedulesData))
+
+            // Insert all schedules in one go
+            await prisma.schedule.createMany({
+                data: schedulesData,
+            });
+        }
 
         res.status(201).json({
             message: "Berhasil apa ni bang",
