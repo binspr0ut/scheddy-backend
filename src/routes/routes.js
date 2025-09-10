@@ -60,6 +60,6 @@ router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
 
 router.post("/schedule/generate_libur_by_month", generateLiburByMonth)
 
-router.get("/fee/get_caddy_fee", getCaddyFee)
+router.post("/fee/get_caddy_fee", getCaddyFee)
 
 export default router;
