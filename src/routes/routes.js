@@ -28,6 +28,7 @@ import seedOnField from "../utils/onfield_seeder.js";
 import getCaddyFee from "../controllers/get_caddy_fee.js";
 import getCalendarNextMonth from "../controllers/get_calendar_next_month.js";
 import generateLiburByMonth from "../controllers/post_generate_libur.js";
+import deleteLiburByMonth from "../controllers/delete_libur_monthly.js";
 
 import getScheduleAfter from "../controllers/get_schedule_after.js";
 
@@ -65,6 +66,10 @@ router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
 router.get("/schedule/after", getScheduleAfter);
 router.post("/schedule/generate_libur_by_month", generateLiburByMonth);
 
-router.post("/fee/get_caddy_fee", getCaddyFee);
+
+router.post("/schedule/generate_libur_by_month", generateLiburByMonth)
+router.delete("/schedule/delete_libur", deleteLiburByMonth)
+
+router.get("/fee/get_caddy_fee", getCaddyFee)
 
 export default router;
