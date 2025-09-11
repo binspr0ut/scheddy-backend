@@ -16,15 +16,15 @@ const getCaddyFee = async (req, res) => {
                 message: "Month is required"
             })
         } else {
-            console.log("MONTH DARI REQUEST BODY : " + month)
+            // console.log("MONTH DARI REQUEST BODY : " + month)
         }
 
-        const firstDay = parse(month, "MMMM yyyy", new Date());
+        const firstDay = parse(month, "MM yyyy", new Date());
         const start = startOfMonth(firstDay);
         const end = endOfMonth(firstDay);
 
-        console.log("START : " + start)
-        console.log("END : " + end)
+        // console.log("START : " + start) 
+        // console.log("END : " + end)
 
         const allGroups = await prisma.caddyGroup.findMany({
             include: {
@@ -32,11 +32,11 @@ const getCaddyFee = async (req, res) => {
             }
         })
 
-        console.log("JUMLAH ALL GROUPS : " + allGroups.length)
+        // console.log("JUMLAH ALL GROUPS : " + allGroups.length)
 
-        for (const group of allGroups) {
-            console.log("JUMLAH CADDY ON ALL GROUP : " + group.caddies.length)
-        }
+        // for (const group of allGroups) {
+        //     console.log("JUMLAH CADDY ON ALL GROUP : " + group.caddies.length)
+        // }
 
         const caddyOnField = await prisma.onField.findMany({
             where: {
@@ -50,44 +50,55 @@ const getCaddyFee = async (req, res) => {
             }
         })
 
-        console.log("CADDY ON FIELD : " + caddyOnField.length)
+        // console.log("CADDY ON FIELD : " + caddyOnField.length)
 
         const caddyMapping = {}
 
         for (const record of caddyOnField) {
 
             const caddyId = record.id_caddy
+            const holes = record.jumlah_hole || 0
 
             if (!caddyMapping[caddyId]) {
-                caddyMapping[caddyId] = { count: 0 }
+                caddyMapping[caddyId] = { total_holes: 0 }
             }
-            caddyMapping[caddyId].count++;
+            caddyMapping[caddyId].total_holes += holes
 
         }
 
-        console.log("CADDY MAPPING : " + JSON.stringify(caddyMapping))
+        //console.log("CADDY MAPPING : " + JSON.stringify(caddyMapping))
 
-        console.log("ALL GROUPS : " + JSON.stringify(allGroups))
+        // console.log("ALL GROUPS : " + JSON.stringify(allGroups))
 
         const result = allGroups.map((group) => {
             const caddies = group.caddies.map((caddy) => {
                 const stats = caddyMapping[caddy.id]
-                const fee_onfield = caddy.caddy_type == 0 ? 50000 : 60000
-                const fee = stats ? stats.count * fee_onfield : 0
+                const fee_onfield = caddy.caddy_type == 0 ? 42500 : 64500
+                const totalHoles = stats ? stats.total_holes : 0
+                const fee = totalHoles / 9 * fee_onfield
 
                 return {
                     id: caddy.id,
                     name: caddy.name,
-                    total_onfields: stats ? stats.count : 0,
+                    caddy_type: caddy.caddy_type,
+                    total_holes: totalHoles,
                     total_fee: fee
                 }
             })
 
             const totalGroupFee = caddies.reduce((sum, c) => sum + c.total_fee, 0);
 
+            let caddy_group_type = "mixed"
+            if (caddies.every(c => c.caddy_type === 1)) {
+                caddy_group_type = "casual"
+            } else if (caddies.every(c => c.caddy_type === 0)) {
+                caddy_group_type = "part-Time"
+            }
+
             return {
                 id_group: group.id,
                 group_name: group.group_name,
+                caddy_group_type,
                 total_group_fee: totalGroupFee,
                 caddies,
             };
