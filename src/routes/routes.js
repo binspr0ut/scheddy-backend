@@ -20,7 +20,7 @@ import getDetailOnField from "../controllers/get_detail_onfield.js";
 import getCaddyDone from "../controllers/get_caddy_done.js";
 import postSchedule from "../controllers/post_schedule.js";
 
-import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js"
+import getGeneratedSchedule from "../controllers/get_generated_daily_schedule.js";
 import seedLibur from "../utils/seed_libur.js";
 import seedSchedulesOnFieldAndStatus from "../utils/seed_schedule_onfield_status.js";
 import seedOnField from "../utils/onfield_seeder.js";
@@ -29,6 +29,7 @@ import getCaddyFee from "../controllers/get_caddy_fee.js";
 import getCalendarNextMonth from "../controllers/get_calendar_next_month.js";
 import generateLiburByMonth from "../controllers/post_generate_libur.js";
 
+import getScheduleAfter from "../controllers/get_schedule_after.js";
 
 const router = express.Router();
 
@@ -48,12 +49,12 @@ router.put("/rekap/checkout/:id", putCheckout);
 router.put("/rekap/update/:id", putUpdateDone);
 
 router.get("/rekap/standby_caddy_sorted", getCaddyStandbySorted);
-router.get("/rekap/get_caddy_booking", getCaddyBooking)
+router.get("/rekap/get_caddy_booking", getCaddyBooking);
 
-router.get("/seed/schedule_onfield", seedSchedulesAndOnField)
-router.post("/seed/libur", seedLibur)
-router.post("/seed/onfield", seedOnField)
-router.post("/seed/schedule_onfield_status", seedSchedulesOnFieldAndStatus)
+router.get("/seed/schedule_onfield", seedSchedulesAndOnField);
+router.post("/seed/libur", seedLibur);
+router.post("/seed/onfield", seedOnField);
+router.post("/seed/schedule_onfield_status", seedSchedulesOnFieldAndStatus);
 
 router.get("/rekap/caddy_onfield", getCaddyOnField);
 router.get("/rekap/caddy_done", getCaddyDone);
@@ -61,9 +62,9 @@ router.get("/rekap/detail_onfield/:id_caddy", getDetailOnField);
 
 router.post("/schedule/create", postSchedule);
 router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
+router.get("/schedule/after", getScheduleAfter);
+router.post("/schedule/generate_libur_by_month", generateLiburByMonth);
 
-router.post("/schedule/generate_libur_by_month", generateLiburByMonth)
-
-router.post("/fee/get_caddy_fee", getCaddyFee)
+router.post("/fee/get_caddy_fee", getCaddyFee);
 
 export default router;
