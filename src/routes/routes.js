@@ -66,10 +66,9 @@ router.get("/schedule/generated_daily_schedule", getGeneratedSchedule);
 router.get("/schedule/after", getScheduleAfter);
 router.post("/schedule/generate_libur_by_month", generateLiburByMonth);
 
+router.post("/schedule/generate_libur_by_month", generateLiburByMonth);
+router.delete("/schedule/delete_libur", deleteLiburByMonth);
 
-router.post("/schedule/generate_libur_by_month", generateLiburByMonth)
-router.delete("/schedule/delete_libur", deleteLiburByMonth)
-
-router.get("/fee/get_caddy_fee", getCaddyFee)
+router.get("/fee/get_caddy_fee", getCaddyFee);
 
 export default router;
