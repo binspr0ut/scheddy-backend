@@ -6,7 +6,7 @@ const getCalendar = async (req, res) => {
     const month = new Date().getMonth()+1;
     const year = new Date().getFullYear();
     const start = new Date(`${year}-${month}-1`);
-    const end = new Date(`${year}-${month}-31`);
+    const end = new Date(year, month + 1, 0);
 
     const liburRaw = await prisma.libur.findMany({
       where: {
