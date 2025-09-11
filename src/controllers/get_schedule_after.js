@@ -17,7 +17,11 @@ const getScheduleAfter = async (req, res) => {
         },
       },
       include: {
-        caddy_group: true,
+        caddy_group: {
+          include: {
+            caddies: true,
+          },
+        },
       },
       orderBy: {
         urutan: "asc",
@@ -27,6 +31,7 @@ const getScheduleAfter = async (req, res) => {
     const schedules = schedulesRaw.map((s) => ({
       ...s,
       group_name: s.caddy_group.group_name,
+      allCaddiesDetail: s.caddy_group.caddies,
       caddy_group: undefined,
     }));
 
