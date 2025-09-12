@@ -7,9 +7,9 @@ const getCaddyFee = async (req, res) => {
 
 
     try {
-        console.log("P MASUK TRY BANG")
+        // console.log("P MASUK TRY BANG")
 
-        const { month } = req.body
+        const month = req.params.month
 
         if (!month) {
             return res.status(400).json({
@@ -19,9 +19,10 @@ const getCaddyFee = async (req, res) => {
             // console.log("MONTH DARI REQUEST BODY : " + month)
         }
 
-        const firstDay = parse(month, "MM yyyy", new Date());
-        const start = startOfMonth(firstDay);
-        const end = endOfMonth(firstDay);
+        const firstDay = parse(month, "MM", new Date());
+        const year = new Date().getFullYear();
+        const start = new Date(`${year}-${month}-1`);
+        const end = new Date(year, month + 1, 0);
 
         // console.log("START : " + start) 
         // console.log("END : " + end)
