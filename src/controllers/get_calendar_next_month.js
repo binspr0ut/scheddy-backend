@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-const getCalendar = async (req, res) => {
-  try {
-    const month = new Date().getMonth()+1;
+const getCalendarNextMonth = async (req, res) => {
+    try {
+    const month = req.params.month;
     const year = new Date().getFullYear();
     const start = new Date(`${year}-${month}-1`);
     const end = new Date(year, month + 1, 0);
@@ -55,6 +55,7 @@ const getCalendar = async (req, res) => {
     res.status(200).json({
       message: "Get calendar berhasil",
       data: {
+        bulan: month,
         libur: libur,
         booking: booking,
       },
@@ -66,6 +67,6 @@ const getCalendar = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
 
-export default getCalendar;
+export default getCalendarNextMonth;

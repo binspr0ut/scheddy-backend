@@ -39,6 +39,7 @@ const getGeneratedSchedule = async (req, res) => {
       select: {
         caddy_group: {
           select: {
+            id: true,
             group_name: true,
             caddies: {
               select: { id: true, name: true },
@@ -59,6 +60,7 @@ const getGeneratedSchedule = async (req, res) => {
       select: {
         caddy_group: {
           select: {
+            id: true,
             group_name: true,
             caddies: {
               select: { id: true, name: true },
@@ -96,6 +98,7 @@ const getGeneratedSchedule = async (req, res) => {
         .sort((a, b) => a.turunCount - b.turunCount); // urut ASC
 
       return {
+        id_group: g.id,
         group_name: g.group_name,
         notOnFieldCount: notOnField.length,
         allCaddiesDetail,
@@ -121,6 +124,7 @@ const getGeneratedSchedule = async (req, res) => {
               "Libur Today": {
                 groups: [
                   {
+                    id_group: groupLiburToday.caddy_group.id,
                     group_name: groupLiburToday.caddy_group.group_name,
                     allCaddiesDetail: groupLiburToday.caddy_group.caddies
                       .map(c => ({
@@ -141,6 +145,7 @@ const getGeneratedSchedule = async (req, res) => {
               "Libur Tomorrow": {
                 groups: [
                   {
+                    id_group: groupLiburToday.caddy_group.id,
                     group_name: groupLiburTomorrow.caddy_group.group_name,
                     allCaddiesDetail: groupLiburTomorrow.caddy_group.caddies
                       .map(c => ({
