@@ -59,11 +59,18 @@ const getCaddyFee = async (req, res) => {
 
             const caddyId = record.id_caddy
             const holes = record.jumlah_hole || 0
+            var record_turun = 0
+            if (holes > 18) {
+                record_turun = 2
+            } else if (holes > 0 && holes <= 18) {
+                record_turun = 1
+            }
 
             if (!caddyMapping[caddyId]) {
-                caddyMapping[caddyId] = { total_holes: 0 }
+                caddyMapping[caddyId] = { total_holes: 0, total_turun: 0 }
             }
             caddyMapping[caddyId].total_holes += holes
+            caddyMapping[caddyId].total_turun += record_turun
 
         }
 
@@ -75,14 +82,15 @@ const getCaddyFee = async (req, res) => {
             const caddies = group.caddies.map((caddy) => {
                 const stats = caddyMapping[caddy.id]
                 const fee_onfield = caddy.caddy_type == 0 ? 42500 : 64500
-                const totalHoles = stats ? stats.total_holes : 0
-                const fee = totalHoles / 9 * fee_onfield
+                const total_holes = stats ? stats.total_holes : 0
+                const fee = total_holes / 9 * fee_onfield
+                const total_turun = stats ? stats.total_turun : 0
 
                 return {
                     id: caddy.id,
                     name: caddy.name,
                     caddy_type: caddy.caddy_type,
-                    total_holes: totalHoles,
+                    total_turun: total_turun,
                     total_fee: fee
                 }
             })
