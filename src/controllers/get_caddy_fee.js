@@ -97,11 +97,11 @@ const getCaddyFee = async (req, res) => {
 
             const totalGroupFee = caddies.reduce((sum, c) => sum + c.total_fee, 0);
 
-            let caddy_group_type = "mixed"
+            let caddy_group_type = "Mixed"
             if (caddies.every(c => c.caddy_type === 1)) {
-                caddy_group_type = "casual"
+                caddy_group_type = "Casual"
             } else if (caddies.every(c => c.caddy_type === 0)) {
-                caddy_group_type = "part-Time"
+                caddy_group_type = "Part-Time"
             }
 
             return {
