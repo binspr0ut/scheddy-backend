@@ -79,7 +79,7 @@ const getCaddyFee = async (req, res) => {
         // console.log("ALL GROUPS : " + JSON.stringify(allGroups))
 
         const result = allGroups.map((group) => {
-            const caddies = group.caddies.map((caddy) => {
+            let caddies = group.caddies.map((caddy) => {
                 const stats = caddyMapping[caddy.id]
                 const fee_onfield = caddy.caddy_type == 0 ? 42500 : 64500
                 const total_holes = stats ? stats.total_holes : 0
@@ -95,6 +95,7 @@ const getCaddyFee = async (req, res) => {
                 }
             })
 
+            caddies.sort((a, b) => a.name.localeCompare(b.name))
             const totalGroupFee = caddies.reduce((sum, c) => sum + c.total_fee, 0);
 
             let caddy_group_type = "Mixed"
